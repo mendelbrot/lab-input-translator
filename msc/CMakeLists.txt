@@ -34,8 +34,7 @@ project(msc C CXX ASM)
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
-
-add_executable(msc main.c )
+add_executable(msc src/main.c )
 
 pico_set_program_name(msc "msc")
 pico_set_program_version(msc "0.1")
@@ -46,11 +45,20 @@ pico_enable_stdio_usb(msc 0)
 
 # Add the standard library to the build
 target_link_libraries(msc
-        pico_stdlib)
+    pico_stdlib
+    tinyusb_device
+    tinyusb_board
+)
+
+target_sources(msc PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/msc_disk.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/usb_descriptors.c
+)
 
 # Add the standard include files to the build
 target_include_directories(msc PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 pico_add_extra_outputs(msc)
