@@ -209,21 +209,65 @@ bool tud_msc_is_writable_cb (uint8_t lun)
 #endif
 }
 
+const int ROW = 1;
+const int COL = 2;
 // Callback invoked when received WRITE10 command.
-// Process data in buffer to disk's storage and return number of written bytes
+//
+// For the LIT, this function is edited to extract the CSV data. 
+// The data is printed -> the printed data is sent to microcontroller B via UART.
+// The data/file is not saved.
+// -> Edit the constants COL and ROW to select the specific cell to send.
 int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* buffer, uint32_t bufsize)
 {
-  (void) lun;
+  (void) lun; // Unused in input
+  (void) offset; // Unused in input
 
-  // out of ramdisk
-  if ( lba >= DISK_BLOCK_NUM ) return -1;
+  // check the buffer and skip if it doesn't look like CSV text data.
+  // (tud_msc_write10_cb is called multiple times per file save, 
+  // but we only care about the call with the file content csv text data.)
+  bool is_ascii = true; 
+  bool has_comma = false;
+  for (int i = 0; i < bufsize; i++) {
+    if (buffer[i] > 127) {
+      is_ascii = false; // non-ASCII character found
+      break;
+    }
+    if (buffer[i] == ',') {
+      has_comma = true; // comma found
+    }
+  }
+  if (!is_ascii || !has_comma) {
+    return (int32_t) bufsize;
+  }
 
-#ifndef CFG_EXAMPLE_MSC_READONLY
-  uint8_t* addr = msc_disk[lba] + offset;
-  memcpy(addr, buffer, bufsize);
-#else
-  (void) lba; (void) offset; (void) buffer;
-#endif
+  // extract the data at the specified row/column and print it
+  int row = 0; // current row
+  int col = 0; // current column
+  uint8_t* start = buffer; // start of current cell
+  uint8_t* pos = buffer; // current position in string
+  while (pos < buffer + bufsize && col <= COL &&!(row > ROW && col == COL)) {
+    if (*pos == ',' || *pos == '\n' || *pos == '\0' || pos == buffer + bufsize - 1) {
+      if (row == ROW && col == COL) {
+        for (const uint8_t* p = start; p < pos; p++) {
+          printf("%c", *p); // -> this is where the cell data is printed
+        }
+        printf("\n");
+      }
+
+      // end of cell, or end of sting
+      if (*pos == ',' || *pos == '\0' || pos == buffer + bufsize - 1) {
+        col++;
+        start = pos + 1;
+      }
+      // end of row
+      if (*pos == '\n') {
+        row++;
+        col = 0;
+        start = pos + 1;
+      }
+    }
+    pos++;
+  }
 
   return (int32_t) bufsize;
 }
