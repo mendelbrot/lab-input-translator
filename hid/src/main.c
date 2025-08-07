@@ -29,6 +29,13 @@
 
 #include "bsp/board_api.h"
 #include "tusb.h"
+#include "hardware/uart.h"
+#include "hardware/gpio.h"
+
+// UART defines
+#define BAUD_RATE 115200
+#define UART_TX_PIN 4
+#define UART_RX_PIN 5
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -60,6 +67,11 @@ void hid_task(void);
 int main(void)
 {
   board_init();
+
+  // Set up UART
+  uart_init(uart1, BAUD_RATE);
+  gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+  gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
   // init device stack on configured roothub port
   tusb_rhport_init_t dev_init = {
@@ -133,6 +145,53 @@ void hid_task(void)
     // Wake up host if we are in suspend mode
     // and REMOTE_WAKEUP feature is enabled by host
     tud_remote_wakeup();
+  }
+
+  /*------------- Enter data from UART -------------*/
+  if ( tud_hid_n_ready(ITF_KEYBOARD) )
+  {
+    // use to avoid send multiple consecutive zero report for keyboard
+    static bool has_key = false;
+
+    if ( uart_is_readable(uart1) )
+    {
+      uint8_t keycode[6] = { 0 };
+      char ch = uart_getc(uart1); // Read character from UART
+
+      if (ch == '0') {
+        keycode[0] = HID_KEY_0;
+      } else if (ch == '1') {
+        keycode[0] = HID_KEY_1;
+      } else if (ch == '2') {
+        keycode[0] = HID_KEY_2;
+      } else if (ch == '3') {
+        keycode[0] = HID_KEY_3;
+      } else if (ch == '4') {
+        keycode[0] = HID_KEY_4;
+      } else if (ch == '5') {
+        keycode[0] = HID_KEY_5;
+      } else if (ch == '6') {
+        keycode[0] = HID_KEY_6;
+      } else if (ch == '7') {
+        keycode[0] = HID_KEY_7;
+      } else if (ch == '8') {
+        keycode[0] = HID_KEY_8;
+      } else if (ch == '9') {
+        keycode[0] = HID_KEY_9;
+      } else if (ch == '.') {
+        keycode[0] = HID_KEY_PERIOD;
+      }
+
+      if (keycode[0] != 0 ) {
+        tud_hid_n_keyboard_report(ITF_KEYBOARD, 0, 0, keycode);
+        has_key = true;
+      }
+    } else
+    {
+      // send empty key report if previously has key pressed
+      if (has_key) tud_hid_n_keyboard_report(ITF_KEYBOARD, 0, 0, NULL);
+      has_key = false;
+    }
   }
 
   /*------------- Keyboard -------------*/
