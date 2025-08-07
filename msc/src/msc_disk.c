@@ -25,6 +25,7 @@
 
 #include "bsp/board_api.h"
 #include "tusb.h"
+#include "hardware/uart.h"
 
 #if CFG_TUD_MSC
 
@@ -214,7 +215,7 @@ const int COL = 2;
 // Callback invoked when received WRITE10 command.
 //
 // For the LIT, this function is edited to extract the CSV data. 
-// The data is printed -> the printed data is sent to microcontroller B via UART.
+// The data is sent to microcontroller B via UART.
 // The data/file is not saved.
 // -> Edit the constants COL and ROW to select the specific cell to send.
 int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* buffer, uint32_t bufsize)
@@ -240,7 +241,7 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* 
     return (int32_t) bufsize;
   }
 
-  // extract the data at the specified row/column and print it
+  // extract the data at the specified row/column and send it
   int row = 0; // current row
   int col = 0; // current column
   uint8_t* start = buffer; // start of current cell
@@ -249,9 +250,11 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* 
     if (*pos == ',' || *pos == '\n' || *pos == '\0' || pos == buffer + bufsize - 1) {
       if (row == ROW && col == COL) {
         for (const uint8_t* p = start; p < pos; p++) {
-          printf("%c", *p); // -> this is where the cell data is printed
+          // printf("%c", *p);
+          uart_putc_raw(uart1, *p); // -> this is where the cell data is sent to the other pico
         }
-        printf("\n");
+        // printf("\n");
+        uart_putc_raw(uart1, '\n');
       }
 
       // end of cell, or end of sting

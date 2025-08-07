@@ -25,6 +25,13 @@
 
 #include "bsp/board_api.h"
 #include "tusb.h"
+#include "hardware/uart.h"
+#include "hardware/gpio.h"
+
+// UART defines
+#define BAUD_RATE 115200
+#define UART_TX_PIN 4
+#define UART_RX_PIN 5
 
 //--------------------------------------------------------------------+
 // MACRO CONSTANT TYPEDEF PROTYPES
@@ -49,6 +56,11 @@ void cdc_task(void);
 /*------------- MAIN -------------*/
 int main(void) {
   board_init();
+
+  // Set up UART
+  uart_init(uart1, BAUD_RATE);
+  gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+  gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
   // init device stack on configured roothub port
   tusb_rhport_init_t dev_init = {
