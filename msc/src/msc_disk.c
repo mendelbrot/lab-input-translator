@@ -210,7 +210,7 @@ bool tud_msc_is_writable_cb (uint8_t lun)
 #endif
 }
 
-const int ROW = 1;
+const int ROW = 2;
 const int COL = 2;
 // Callback invoked when received WRITE10 command.
 //

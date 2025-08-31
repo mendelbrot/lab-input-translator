@@ -29,7 +29,7 @@
 #include "hardware/gpio.h"
 
 // UART defines
-#define BAUD_RATE 115200
+#define BAUD_RATE 9600 // 115200
 #define UART_TX_PIN 4
 #define UART_RX_PIN 5
 

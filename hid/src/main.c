@@ -33,7 +33,7 @@
 #include "hardware/gpio.h"
 
 // UART defines
-#define BAUD_RATE 115200
+#define BAUD_RATE 9600 // 115200
 #define UART_TX_PIN 4
 #define UART_RX_PIN 5
 
@@ -180,6 +180,8 @@ void hid_task(void)
         keycode[0] = HID_KEY_9;
       } else if (ch == '.') {
         keycode[0] = HID_KEY_PERIOD;
+      } else if (ch == '\n'){ 
+        keycode[0] = HID_KEY_ENTER;
       }
 
       if (keycode[0] != 0 ) {
