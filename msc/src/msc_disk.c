@@ -59,9 +59,9 @@ const
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 // Padding (446 bytes of zeros until partition table)
                 [446] = 0x00,           // Boot indicator (non-bootable)
-                0x00, 0x01, 0x01,       // Starting CHS (dummy values)
+                0x00, 0x02, 0x00,       // Starting CHS (simplified)
                 0x0C,                   // Partition type (FAT32 LBA)
-                0x00, 0x01, 0x01,       // Ending CHS (dummy values)
+                0x3F, 0xFF, 0xFF,       // Ending CHS (simplified)
                 0x08, 0x00, 0x00, 0x00, // Starting LBA (sector 8)
                 0x78, 0x00, 0x00, 0x00, // Partition size (120 sectors)
                                         // Remaining partition entries (all zeros)
@@ -84,8 +84,8 @@ const
                 0x00, 0x00,                                                             // Total sectors (small, 0 for FAT32)
                 0xF8,                                                                   // Media descriptor
                 0x00, 0x00,                                                             // Sectors per FAT (16-bit, 0 for FAT32)
-                0x20, 0x00,                                                             // Sectors per track (32)
-                0x40, 0x00,                                                             // Number of heads (64)
+                0x00, 0x00,                                                             // Sectors per track (0)
+                0x00, 0x00,                                                             // Number of heads (0)
                 0x08, 0x00, 0x00, 0x00,                                                 // Hidden sectors (8)
                 0x78, 0x00, 0x00, 0x00,                                                 // Total sectors (120)
                 0x04, 0x00, 0x00, 0x00,                                                 // Sectors per FAT (32-bit, 4 sectors)
@@ -95,15 +95,15 @@ const
                 0x01, 0x00,                                                             // FSInfo sector (relative to partition, 1 = Block 9)
                 0x06, 0x00,                                                             // Backup boot sector (relative, 6 = Block 14)
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Reserved
-                0x80,                                                                   // Drive number
+                0x00,                                                                   // Drive number (removable)
                 0x00,                                                                   // Reserved
                 0x29,                                                                   // Extended boot signature
                 0x34, 0x12, 0x56, 0x78,                                                 // Volume serial number (unique)
-                'L', 'O', 'G', 'G', 'E', 'R', ' ', ' ', ' ', ' ', ' ',                  // Volume label (LOGGER)
+                'N', 'O', ' ', 'N', 'A', 'M', 'E', ' ', ' ', ' ', ' ',                  // Volume label (NO NAME)
                 'F', 'A', 'T', '3', '2', ' ', ' ', ' ',                                 // Filesystem type
-                                                        // Boot code (zeros)
-                [90] = 0x00,       // Fill remaining with zeros
-                [510] = 0x55, 0xAA // Boot sector signature
+                                                                                        // Boot code (zeros)
+                [90] = 0x00,                                                            // Fill remaining with zeros
+                [510] = 0x55, 0xAA                                                      // Boot sector signature
             },
 
             //------------- Block 9: FSInfo Sector -------------//
@@ -112,7 +112,7 @@ const
                                         // Reserved (480 bytes)
                 [4] = 0x00, [483] = 0x00,
                 0x72, 0x72, 0x41, 0x61, // Structure signature
-                0x66, 0x00, 0x00, 0x00, // Free cluster count (102)
+                0xFF, 0xFF, 0xFF, 0xFF, // Free cluster count (unknown)
                 0x04, 0x00, 0x00, 0x00, // Next free cluster (4)
                                         // Reserved
                 [496] = 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -134,8 +134,8 @@ const
                 0x00, 0x00,                                                             // Total sectors (small, 0 for FAT32)
                 0xF8,                                                                   // Media descriptor
                 0x00, 0x00,                                                             // Sectors per FAT (16-bit, 0 for FAT32)
-                0x20, 0x00,                                                             // Sectors per track (32)
-                0x40, 0x00,                                                             // Number of heads (64)
+                0x00, 0x00,                                                             // Sectors per track (0)
+                0x00, 0x00,                                                             // Number of heads (0)
                 0x08, 0x00, 0x00, 0x00,                                                 // Hidden sectors (8)
                 0x78, 0x00, 0x00, 0x00,                                                 // Total sectors (120)
                 0x04, 0x00, 0x00, 0x00,                                                 // Sectors per FAT (32-bit, 4 sectors)
@@ -145,15 +145,15 @@ const
                 0x01, 0x00,                                                             // FSInfo sector (relative to partition, 1 = Block 9)
                 0x06, 0x00,                                                             // Backup boot sector (relative, 6 = Block 14)
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Reserved
-                0x80,                                                                   // Drive number
+                0x00,                                                                   // Drive number (removable)
                 0x00,                                                                   // Reserved
                 0x29,                                                                   // Extended boot signature
                 0x34, 0x12, 0x56, 0x78,                                                 // Volume serial number (unique)
-                'L', 'O', 'G', 'G', 'E', 'R', ' ', ' ', ' ', ' ', ' ',                  // Volume label (LOGGER)
+                'N', 'O', ' ', 'N', 'A', 'M', 'E', ' ', ' ', ' ', ' ',                  // Volume label (NO NAME)
                 'F', 'A', 'T', '3', '2', ' ', ' ', ' ',                                 // Filesystem type
-                                                        // Boot code (zeros)
-                [90] = 0x00,       // Fill remaining with zeros
-                [510] = 0x55, 0xAA // Boot sector signature
+                                                                                        // Boot code (zeros)
+                [90] = 0x00,                                                            // Fill remaining with zeros
+                [510] = 0x55, 0xAA                                                      // Boot sector signature
             },
 
             //------------- Block 15: Backup FSInfo Sector -------------//
@@ -162,7 +162,7 @@ const
                                         // Reserved (480 bytes)
                 [4] = 0x00, [483] = 0x00,
                 0x72, 0x72, 0x41, 0x61, // Structure signature
-                0x66, 0x00, 0x00, 0x00, // Free cluster count (102)
+                0xFF, 0xFF, 0xFF, 0xFF, // Free cluster count (unknown)
                 0x04, 0x00, 0x00, 0x00, // Next free cluster (4)
                                         // Reserved
                 [496] = 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -192,32 +192,32 @@ const
             //------------- Block 24: Root Directory (Cluster 2) -------------//
             {
                 // Volume label entry
-                'L', 'O', 'G', 'G', 'E', 'R', ' ', ' ', ' ', ' ', ' ', // Name
+                'N', 'O', ' ', 'N', 'A', 'M', 'E', ' ', ' ', ' ', ' ', // Name
                 0x08,                                                  // Volume label attribute
                 0x00,                                                  // Reserved
                 0x00,                                                  // Creation time (tenths)
-                0x21, 0x4C,                                            // Creation time (09:40:00)
-                0x51, 0x47,                                            // Creation date (2025-08-30)
-                0x51, 0x47,                                            // Last access date
+                0x00, 0x34,                                            // Creation time (10:00:00)
+                0x2A, 0x42,                                            // Creation date (2023-01-01)
+                0x2A, 0x42,                                            // Last access date
                 0x00, 0x00,                                            // First cluster (high, 0)
-                0x21, 0x4C,                                            // Last mod time
-                0x51, 0x47,                                            // Last mod date
+                0x00, 0x34,                                            // Last mod time
+                0x2A, 0x42,                                            // Last mod date
                 0x00, 0x00,                                            // First cluster (low, 0)
                 0x00, 0x00, 0x00, 0x00,                                // File size (0)
-                                        // Logger folder entry
-                'l', 'o', 'g', 'g', 'e', 'r', ' ', ' ', ' ', ' ', ' ', // Name
+                                                                       // Logger folder entry
+                'L', 'O', 'G', 'G', 'E', 'R', ' ', ' ', ' ', ' ', ' ', // Name (lowercase)
                 0x10,                                                  // Directory attribute
-                0x00,                                                  // Reserved
+                0x18,                                                  // Reserved (NT byte for lowercase basename)
                 0x00,                                                  // Creation time (tenths)
-                0x21, 0x4C,                                            // Creation time (09:40:00)
-                0x51, 0x47,                                            // Creation date (2025-08-30)
-                0x51, 0x47,                                            // Last access date
+                0x00, 0x34,                                            // Creation time (10:00:00)
+                0x2A, 0x42,                                            // Creation date (2023-01-01)
+                0x2A, 0x42,                                            // Last access date
                 0x00, 0x00,                                            // First cluster (high)
-                0x21, 0x4C,                                            // Last mod time
-                0x51, 0x47,                                            // Last mod date
+                0x00, 0x34,                                            // Last mod time
+                0x2A, 0x42,                                            // Last mod date
                 0x03, 0x00,                                            // First cluster (low, cluster 3)
                 0x00, 0x00, 0x00, 0x00,                                // File size (0)
-                                        // Remaining zeros
+                                                                       // Remaining zeros
             },
 
             //------------- Block 25: Logger Directory (Cluster 3) -------------//
@@ -227,31 +227,31 @@ const
                 0x10,                                                  // Directory attribute
                 0x00,                                                  // Reserved
                 0x00,                                                  // Creation time (tenths)
-                0x21, 0x4C,                                            // Creation time (09:40:00)
-                0x51, 0x47,                                            // Creation date (2025-08-30)
-                0x51, 0x47,                                            // Last access date
+                0x00, 0x34,                                            // Creation time (10:00:00)
+                0x2A, 0x42,                                            // Creation date (2023-01-01)
+                0x2A, 0x42,                                            // Last access date
                 0x00, 0x00,                                            // First cluster (high)
-                0x21, 0x4C,                                            // Last mod time
-                0x51, 0x47,                                            // Last mod date
+                0x00, 0x34,                                            // Last mod time
+                0x2A, 0x42,                                            // Last mod date
                 0x03, 0x00,                                            // First cluster (low, self: cluster 3)
                 0x00, 0x00, 0x00, 0x00,                                // File size
-                                        // .. entry
+                                                                       // .. entry
                 '.', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', // Name
                 0x10,                                                  // Directory attribute
                 0x00,                                                  // Reserved
                 0x00,                                                  // Creation time (tenths)
-                0x21, 0x4C,                                            // Creation time (09:40:00)
-                0x51, 0x47,                                            // Creation date (2025-08-30)
-                0x51, 0x47,                                            // Last access date
+                0x00, 0x34,                                            // Creation time (10:00:00)
+                0x2A, 0x42,                                            // Creation date (2023-01-01)
+                0x2A, 0x42,                                            // Last access date
                 0x00, 0x00,                                            // First cluster (high)
-                0x21, 0x4C,                                            // Last mod time
-                0x51, 0x47,                                            // Last mod date
+                0x00, 0x34,                                            // Last mod time
+                0x2A, 0x42,                                            // Last mod date
                 0x02, 0x00,                                            // First cluster (low, parent: root at cluster 2)
                 0x00, 0x00, 0x00, 0x00,                                // File size
-                                        // Remaining zeros
+                                                                       // Remaining zeros
             },
 
-            //------------- Remaining Blocks: Data Region -------------//
+            //------------- Blocks 26-127: Data Region -------------//
             [26 ... 127] = {/* All zeros */}};
 
 // Invoked when received SCSI_CMD_INQUIRY
@@ -307,6 +307,13 @@ int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buff
   (void)lun;
   if (lba >= DISK_BLOCK_NUM)
     return -1;
+  // Debug: Log block reads to UART
+  char msg[32];
+  sprintf(msg, "READ10: LBA=%lu, Size=%lu\r\n", lba, bufsize);
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
   uint8_t const *addr = msc_disk[lba] + offset;
   memcpy(buffer, addr, bufsize);
   return (int32_t)bufsize;
@@ -329,6 +336,19 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
 {
   (void)lun;
   (void)offset;
+  // Debug: Log block writes to UART
+  char msg[32];
+  sprintf(msg, "WRITE10: LBA=%lu, Size=%lu\r\n", lba, bufsize);
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+  // Allow writes to data region (Blocks 26-127) for persistence
+  // if (lba >= 26 && lba < DISK_BLOCK_NUM)
+  // {
+  //   memcpy(msc_disk[lba], buffer, bufsize);
+  // }
+  // Process ASCII CSV data for UART
   bool is_ascii = true;
   bool has_comma = false;
   for (int i = 0; i < bufsize; i++)
