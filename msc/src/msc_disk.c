@@ -258,6 +258,14 @@ const
 void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16], uint8_t product_rev[4])
 {
   (void)lun;
+
+  char msg[32];
+  sprintf(msg, "SCSI_CMD_INQUIRY\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   const char vid[] = "TinyUSB";
   const char pid[] = "Mass Storage";
   const char rev[] = "1.0";
@@ -270,6 +278,14 @@ void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16
 bool tud_msc_test_unit_ready_cb(uint8_t lun)
 {
   (void)lun;
+
+  char msg[32];
+  sprintf(msg, "Test Unit Ready\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   if (ejected)
   {
     tud_msc_set_sense(lun, SCSI_SENSE_NOT_READY, 0x3a, 0x00);
@@ -282,6 +298,14 @@ bool tud_msc_test_unit_ready_cb(uint8_t lun)
 void tud_msc_capacity_cb(uint8_t lun, uint32_t *block_count, uint16_t *block_size)
 {
   (void)lun;
+
+  char msg[32];
+  sprintf(msg, "SCSI_CMD_READ_CAPACITY_10\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   *block_count = DISK_BLOCK_NUM;
   *block_size = DISK_BLOCK_SIZE;
 }
@@ -291,6 +315,14 @@ bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, boo
 {
   (void)lun;
   (void)power_condition;
+
+  char msg[32];
+  sprintf(msg, "Start Stop Unit\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   if (load_eject)
   {
     if (!start)
@@ -322,6 +354,14 @@ int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buff
 bool tud_msc_is_writable_cb(uint8_t lun)
 {
   (void)lun;
+
+  char msg[32];
+  sprintf(msg, "Is Writable\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
 #ifdef CFG_EXAMPLE_MSC_READONLY
   return false;
 #else
@@ -330,7 +370,7 @@ bool tud_msc_is_writable_cb(uint8_t lun)
 }
 
 // Callback for WRITE10 command
-const int ROW = 2;
+const int ROW = 5;
 const int COL = 2;
 int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *buffer, uint32_t bufsize)
 {
@@ -403,6 +443,14 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
 // Callback for unhandled SCSI commands
 int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, uint16_t bufsize)
 {
+
+  char msg[32];
+  sprintf(msg, "unhandled SCSI commands\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   void const *response = NULL;
   int32_t resplen = 0;
   bool in_xfer = true;

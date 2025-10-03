@@ -25,6 +25,7 @@
 
 #include "bsp/board_api.h"
 #include "tusb.h"
+#include "hardware/uart.h"
 
 /* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
  * Same VID/PID with different interface e.g MSC (first), then CDC (later) will possibly cause system error on PC.
@@ -175,6 +176,14 @@ tusb_desc_device_qualifier_t const desc_device_qualifier = {
 // device_qualifier descriptor describes information about a high-speed capable device that would
 // change if the device were operating at the other speed. If not highspeed capable stall this request.
 uint8_t const *tud_descriptor_device_qualifier_cb(void) {
+
+  char msg[32];
+  sprintf(msg, "GET DEVICE QUALIFIER DESCRIPTOR\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   return (uint8_t const *) &desc_device_qualifier;
 }
 
@@ -183,6 +192,13 @@ uint8_t const *tud_descriptor_device_qualifier_cb(void) {
 // Configuration descriptor in the other speed e.g if high speed then this is for full speed and vice versa
 uint8_t const *tud_descriptor_other_speed_configuration_cb(uint8_t index) {
   (void) index; // for multiple configurations
+
+  char msg[32];
+  sprintf(msg, "GET OTHER SEED CONFIGURATION DESCRIPTOR\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
 
   // if link speed is high return fullspeed config, and vice versa
   // Note: the descriptor type is OHER_SPEED_CONFIG instead of CONFIG
@@ -203,6 +219,13 @@ uint8_t const *tud_descriptor_other_speed_configuration_cb(uint8_t index) {
 // Descriptor contents must exist long enough for transfer to complete
 uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
   (void) index; // for multiple configurations
+
+  char msg[32];
+  sprintf(msg, "GET CONFIGURATION DESCRIPTOR\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
 
 #if TUD_OPT_HIGH_SPEED
   // Although we are highspeed, host may be fullspeed.
@@ -241,6 +264,13 @@ static uint16_t _desc_str[32 + 1];
 uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
   (void) langid;
   size_t chr_count;
+
+  char msg[32];
+  sprintf(msg, "GET STRING DESCRIPTOR\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
 
   switch ( index ) {
     case STRID_LANGID:

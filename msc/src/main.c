@@ -87,6 +87,14 @@ int main(void) {
 
 // Invoked when device is mounted
 void tud_mount_cb(void) {
+
+  char msg[32];
+  sprintf(msg, "device is mounted\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   blink_interval_ms = BLINK_MOUNTED;
 }
 
@@ -99,12 +107,28 @@ void tud_umount_cb(void) {
 // remote_wakeup_en : if host allow us  to perform remote wakeup
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
 void tud_suspend_cb(bool remote_wakeup_en) {
+
+  char msg[32];
+  sprintf(msg, "device is unmounted\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   (void) remote_wakeup_en;
   blink_interval_ms = BLINK_SUSPENDED;
 }
 
 // Invoked when usb bus is resumed
 void tud_resume_cb(void) {
+
+  char msg[32];
+  sprintf(msg, "usb bus is resumed\r\n");
+  for (char *p = msg; *p; p++)
+  {
+    uart_putc_raw(uart1, *p);
+  }
+
   blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
 }
 
