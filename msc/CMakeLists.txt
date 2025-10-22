@@ -25,6 +25,8 @@ endif()
 # ====================================================================================
 set(PICO_BOARD pico2 CACHE STRING "Board type")
 
+set(LOG 1)  # 0: none, 1: errors, 2: warnings/events, 3: info (verbose)
+
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
@@ -42,6 +44,10 @@ pico_set_program_version(msc "0.1")
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(msc 1)
 pico_enable_stdio_usb(msc 0)
+
+# target_compile_definitions(msc PRIVATE
+#     PICO_DEFAULT_UART_BAUD_RATE=9600
+# )
 
 # Add the standard library to the build
 target_link_libraries(msc

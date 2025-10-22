@@ -259,12 +259,7 @@ void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16
 {
   (void)lun;
 
-  char msg[32];
-  sprintf(msg, "SCSI_CMD_INQUIRY\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### SCSI_CMD_INQUIRY ###\r\n");
 
   const char vid[] = "TinyUSB";
   const char pid[] = "Mass Storage";
@@ -279,12 +274,7 @@ bool tud_msc_test_unit_ready_cb(uint8_t lun)
 {
   (void)lun;
 
-  char msg[32];
-  sprintf(msg, "Test Unit Ready\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### Test Unit Ready ###\r\n");
 
   if (ejected)
   {
@@ -299,12 +289,7 @@ void tud_msc_capacity_cb(uint8_t lun, uint32_t *block_count, uint16_t *block_siz
 {
   (void)lun;
 
-  char msg[32];
-  sprintf(msg, "SCSI_CMD_READ_CAPACITY_10\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### SCSI_CMD_READ_CAPACITY_10 ###\r\n");
 
   *block_count = DISK_BLOCK_NUM;
   *block_size = DISK_BLOCK_SIZE;
@@ -316,12 +301,7 @@ bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, boo
   (void)lun;
   (void)power_condition;
 
-  char msg[32];
-  sprintf(msg, "Start Stop Unit\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### Start Stop Unit ###\r\n");
 
   if (load_eject)
   {
@@ -340,12 +320,10 @@ int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buff
   if (lba >= DISK_BLOCK_NUM)
     return -1;
   // Debug: Log block reads to UART
+  
   char msg[32];
-  sprintf(msg, "READ10: LBA=%lu, Size=%lu\r\n", lba, bufsize);
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  sprintf(msg, "### READ10: LBA=%lu, Size=%lu ###\r\n", lba, bufsize);
+  printf(msg);
   uint8_t const *addr = msc_disk[lba] + offset;
   memcpy(buffer, addr, bufsize);
   return (int32_t)bufsize;
@@ -355,18 +333,10 @@ bool tud_msc_is_writable_cb(uint8_t lun)
 {
   (void)lun;
 
-  char msg[32];
-  sprintf(msg, "Is Writable\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### Is Writable ###\r\n");
 
-#ifdef CFG_EXAMPLE_MSC_READONLY
-  return false;
-#else
   return true;
-#endif
+
 }
 
 // Callback for WRITE10 command
@@ -378,11 +348,9 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
   (void)offset;
   // Debug: Log block writes to UART
   char msg[32];
-  sprintf(msg, "WRITE10: LBA=%lu, Size=%lu\r\n", lba, bufsize);
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  sprintf(msg, "### WRITE10: LBA=%lu, Size=%lu ###\r\n", lba, bufsize);
+  printf(msg);
+
   // Allow writes to data region (Blocks 26-127) for persistence
   // if (lba >= 26 && lba < DISK_BLOCK_NUM)
   // {
@@ -393,11 +361,11 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
   bool has_comma = false;
   for (int i = 0; i < bufsize; i++)
   {
-    if (buffer[i] > 127)
-    {
-      is_ascii = false;
-      break;
-    }
+    // if (buffer[i] > 127)
+    // {
+    //   is_ascii = false;
+    //   break;
+    // }
     if (buffer[i] == ',')
     {
       has_comma = true;
@@ -411,7 +379,7 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
   int col = 0;
   uint8_t *start = buffer;
   uint8_t *pos = buffer;
-  while (pos < buffer + bufsize && col <= COL && !(row > ROW && col == COL))
+  while (pos < buffer + bufsize && row <= ROW)
   {
     if (*pos == ',' || *pos == '\n' || *pos == '\0' || pos == buffer + bufsize - 1)
     {
@@ -444,12 +412,7 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
 int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, uint16_t bufsize)
 {
 
-  char msg[32];
-  sprintf(msg, "unhandled SCSI commands\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### unhandled SCSI commands ###\r\n");
 
   void const *response = NULL;
   int32_t resplen = 0;

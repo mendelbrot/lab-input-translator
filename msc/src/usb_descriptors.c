@@ -177,12 +177,7 @@ tusb_desc_device_qualifier_t const desc_device_qualifier = {
 // change if the device were operating at the other speed. If not highspeed capable stall this request.
 uint8_t const *tud_descriptor_device_qualifier_cb(void) {
 
-  char msg[32];
-  sprintf(msg, "GET DEVICE QUALIFIER DESCRIPTOR\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### GET DEVICE QUALIFIER DESCRIPTOR ###\r\n");
 
   return (uint8_t const *) &desc_device_qualifier;
 }
@@ -193,12 +188,7 @@ uint8_t const *tud_descriptor_device_qualifier_cb(void) {
 uint8_t const *tud_descriptor_other_speed_configuration_cb(uint8_t index) {
   (void) index; // for multiple configurations
 
-  char msg[32];
-  sprintf(msg, "GET OTHER SEED CONFIGURATION DESCRIPTOR\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### GET OTHER SPEED CONFIGURATION DESCRIPTOR ###\r\n");
 
   // if link speed is high return fullspeed config, and vice versa
   // Note: the descriptor type is OHER_SPEED_CONFIG instead of CONFIG
@@ -220,12 +210,7 @@ uint8_t const *tud_descriptor_other_speed_configuration_cb(uint8_t index) {
 uint8_t const *tud_descriptor_configuration_cb(uint8_t index) {
   (void) index; // for multiple configurations
 
-  char msg[32];
-  sprintf(msg, "GET CONFIGURATION DESCRIPTOR\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### GET CONFIGURATION DESCRIPTOR ###\r\n");
 
 #if TUD_OPT_HIGH_SPEED
   // Although we are highspeed, host may be fullspeed.
@@ -265,12 +250,7 @@ uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
   (void) langid;
   size_t chr_count;
 
-  char msg[32];
-  sprintf(msg, "GET STRING DESCRIPTOR\r\n");
-  for (char *p = msg; *p; p++)
-  {
-    uart_putc_raw(uart1, *p);
-  }
+  printf("### GET STRING DESCRIPTOR ###\r\n");
 
   switch ( index ) {
     case STRID_LANGID:
