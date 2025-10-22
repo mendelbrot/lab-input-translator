@@ -180,7 +180,7 @@ void hid_task(void)
         keycode[0] = HID_KEY_9;
       } else if (ch == '.') {
         keycode[0] = HID_KEY_PERIOD;
-      } else if (ch == '\n'){ 
+      } else if (ch == 'N'){ 
         keycode[0] = HID_KEY_ENTER;
       }
 

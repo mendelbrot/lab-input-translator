@@ -57,55 +57,60 @@
 #define CFG_TUSB_OS           OPT_OS_NONE
 #endif
 
-#ifndef CFG_TUSB_DEBUG
-#define CFG_TUSB_DEBUG        0
-#endif
+// #ifndef CFG_TUSB_DEBUG
+// #define CFG_TUSB_DEBUG        3
+// #endif
 
-// Enable Device stack
-#define CFG_TUD_ENABLED       1
+// #define CFG_BOARD_UART_BAUDRATE 9600
 
-// Default is max speed that hardware controller could support with on-chip PHY
-#define CFG_TUD_MAX_SPEED     BOARD_TUD_MAX_SPEED
+// 
+#define LOGGER_STDIO 0
 
-/* USB DMA on some MCUs can only access a specific SRAM region with restriction on alignment.
- * Tinyusb use follows macros to declare transferring memory so that they can be put
- * into those specific section.
- * e.g
- * - CFG_TUSB_MEM SECTION : __attribute__ (( section(".usb_ram") ))
- * - CFG_TUSB_MEM_ALIGN   : __attribute__ ((aligned(4)))
- */
+   // Enable Device stack
+#define CFG_TUD_ENABLED 1
+
+   // Default is max speed that hardware controller could support with on-chip PHY
+#define CFG_TUD_MAX_SPEED BOARD_TUD_MAX_SPEED
+
+   /* USB DMA on some MCUs can only access a specific SRAM region with restriction on alignment.
+    * Tinyusb use follows macros to declare transferring memory so that they can be put
+    * into those specific section.
+    * e.g
+    * - CFG_TUSB_MEM SECTION : __attribute__ (( section(".usb_ram") ))
+    * - CFG_TUSB_MEM_ALIGN   : __attribute__ ((aligned(4)))
+    */
 #ifndef CFG_TUSB_MEM_SECTION
 #define CFG_TUSB_MEM_SECTION
 #endif
 
 #ifndef CFG_TUSB_MEM_ALIGN
-#define CFG_TUSB_MEM_ALIGN    __attribute__ ((aligned(4)))
+#define CFG_TUSB_MEM_ALIGN __attribute__((aligned(4)))
 #endif
 
-//--------------------------------------------------------------------
-// DEVICE CONFIGURATION
-//--------------------------------------------------------------------
+   //--------------------------------------------------------------------
+   // DEVICE CONFIGURATION
+   //--------------------------------------------------------------------
 
 #ifndef CFG_TUD_ENDPOINT0_SIZE
-#define CFG_TUD_ENDPOINT0_SIZE    64
+#define CFG_TUD_ENDPOINT0_SIZE 64
 #endif
 
-//------------- CLASS -------------//
-#define CFG_TUD_CDC              1
-#define CFG_TUD_MSC              1
-#define CFG_TUD_HID              0
-#define CFG_TUD_MIDI             0
-#define CFG_TUD_VENDOR           0
+ //------------- CLASS -------------//
+#define CFG_TUD_CDC 1
+#define CFG_TUD_MSC 1
+#define CFG_TUD_HID 0
+#define CFG_TUD_MIDI 0
+#define CFG_TUD_VENDOR 0
 
-// CDC FIFO size of TX and RX
-#define CFG_TUD_CDC_RX_BUFSIZE   (TUD_OPT_HIGH_SPEED ? 512 : 64)
-#define CFG_TUD_CDC_TX_BUFSIZE   (TUD_OPT_HIGH_SPEED ? 512 : 64)
+ // CDC FIFO size of TX and RX
+#define CFG_TUD_CDC_RX_BUFSIZE (TUD_OPT_HIGH_SPEED ? 512 : 64)
+#define CFG_TUD_CDC_TX_BUFSIZE (TUD_OPT_HIGH_SPEED ? 512 : 64)
 
-// CDC Endpoint transfer buffer size, more is faster
-#define CFG_TUD_CDC_EP_BUFSIZE   (TUD_OPT_HIGH_SPEED ? 512 : 64)
+ // CDC Endpoint transfer buffer size, more is faster
+#define CFG_TUD_CDC_EP_BUFSIZE (TUD_OPT_HIGH_SPEED ? 512 : 64)
 
-// MSC Buffer size of Device Mass storage
-#define CFG_TUD_MSC_EP_BUFSIZE   512
+ // MSC Buffer size of Device Mass storage
+#define CFG_TUD_MSC_EP_BUFSIZE 512
 
 #ifdef __cplusplus
  }

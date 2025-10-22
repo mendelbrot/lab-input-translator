@@ -27,6 +27,8 @@
 #include "tusb.h"
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
+#include <stdio.h>
+#include "pico/stdlib.h"
 
 // UART defines
 #define BAUD_RATE 9600 // 115200
@@ -55,7 +57,12 @@ void cdc_task(void);
 
 /*------------- MAIN -------------*/
 int main(void) {
+  
+  // printf("A1\n");
+  // board_init();
+  stdio_init_all();
   board_init();
+  printf("A2\n");
 
   // Set up UART
   uart_init(uart1, BAUD_RATE);
@@ -75,7 +82,7 @@ int main(void) {
 
   while (1) {
     tud_task(); // tinyusb device task
-    led_blinking_task();
+    led_blinking_task(); 
 
     cdc_task();
   }
@@ -87,6 +94,8 @@ int main(void) {
 
 // Invoked when device is mounted
 void tud_mount_cb(void) {
+  printf("### device is mounted ###\r\n");
+
   blink_interval_ms = BLINK_MOUNTED;
 }
 
@@ -100,11 +109,17 @@ void tud_umount_cb(void) {
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
 void tud_suspend_cb(bool remote_wakeup_en) {
   (void) remote_wakeup_en;
+
+  printf("### device is unmounted ###\r\n");
+
   blink_interval_ms = BLINK_SUSPENDED;
 }
 
 // Invoked when usb bus is resumed
 void tud_resume_cb(void) {
+
+  printf("### usb bus is resumed ###\r\n");
+
   blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
 }
 
