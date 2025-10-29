@@ -171,84 +171,188 @@ const
 
             //------------- Blocks 16-19: FAT1 -------------//
             {
-                0xF8, 0xFF, 0xFF, 0x0F, // Media descriptor, reserved
-                0xFF, 0xFF, 0xFF, 0x0F, // Cluster 1 (reserved)
-                0xFF, 0xFF, 0xFF, 0x0F, // Cluster 2 (root dir, EOC)
-                0xFF, 0xFF, 0xFF, 0x0F, // Cluster 3 (logger dir, EOC)
-                                        // Remaining zeros
+                0xF8,
+                0xFF,
+                0xFF,
+                0x0F, // Media descriptor, reserved
+                0xFF,
+                0xFF,
+                0xFF,
+                0x0F, // Cluster 1 (reserved)
+                0xFF,
+                0xFF,
+                0xFF,
+                0x0F, // Cluster 2 (root dir, EOC)
+                0xFF,
+                0xFF,
+                0xFF,
+                0x0F, // Cluster 3 (logger dir, EOC)
+                      // Remaining zeros
             },
             [17 ... 19] = {/* All zeros */},
 
             //------------- Blocks 20-23: FAT2 (Backup) -------------//
             {
-                0xF8, 0xFF, 0xFF, 0x0F, // Media descriptor, reserved
-                0xFF, 0xFF, 0xFF, 0x0F, // Cluster 1 (reserved)
-                0xFF, 0xFF, 0xFF, 0x0F, // Cluster 2 (root dir, EOC)
-                0xFF, 0xFF, 0xFF, 0x0F, // Cluster 3 (logger dir, EOC)
-                                        // Remaining zeros
+                0xF8,
+                0xFF,
+                0xFF,
+                0x0F, // Media descriptor, reserved
+                0xFF,
+                0xFF,
+                0xFF,
+                0x0F, // Cluster 1 (reserved)
+                0xFF,
+                0xFF,
+                0xFF,
+                0x0F, // Cluster 2 (root dir, EOC)
+                0xFF,
+                0xFF,
+                0xFF,
+                0x0F, // Cluster 3 (logger dir, EOC)
+                      // Remaining zeros
             },
             [21 ... 23] = {/* All zeros */},
 
             //------------- Block 24: Root Directory (Cluster 2) -------------//
             {
                 // Volume label entry
-                'N', 'O', ' ', 'N', 'A', 'M', 'E', ' ', ' ', ' ', ' ', // Name
-                0x08,                                                  // Volume label attribute
-                0x00,                                                  // Reserved
-                0x00,                                                  // Creation time (tenths)
-                0x00, 0x34,                                            // Creation time (10:00:00)
-                0x2A, 0x42,                                            // Creation date (2023-01-01)
-                0x2A, 0x42,                                            // Last access date
-                0x00, 0x00,                                            // First cluster (high, 0)
-                0x00, 0x34,                                            // Last mod time
-                0x2A, 0x42,                                            // Last mod date
-                0x00, 0x00,                                            // First cluster (low, 0)
-                0x00, 0x00, 0x00, 0x00,                                // File size (0)
-                                                                       // Logger folder entry
-                'L', 'O', 'G', 'G', 'E', 'R', ' ', ' ', ' ', ' ', ' ', // Name (lowercase)
-                0x10,                                                  // Directory attribute
-                0x18,                                                  // Reserved (NT byte for lowercase basename)
-                0x00,                                                  // Creation time (tenths)
-                0x00, 0x34,                                            // Creation time (10:00:00)
-                0x2A, 0x42,                                            // Creation date (2023-01-01)
-                0x2A, 0x42,                                            // Last access date
-                0x00, 0x00,                                            // First cluster (high)
-                0x00, 0x34,                                            // Last mod time
-                0x2A, 0x42,                                            // Last mod date
-                0x03, 0x00,                                            // First cluster (low, cluster 3)
-                0x00, 0x00, 0x00, 0x00,                                // File size (0)
-                                                                       // Remaining zeros
+                'N',
+                'O',
+                ' ',
+                'N',
+                'A',
+                'M',
+                'E',
+                ' ',
+                ' ',
+                ' ',
+                ' ',  // Name
+                0x08, // Volume label attribute
+                0x00, // Reserved
+                0x00, // Creation time (tenths)
+                0x00,
+                0x34, // Creation time (10:00:00)
+                0x2A,
+                0x42, // Creation date (2023-01-01)
+                0x2A,
+                0x42, // Last access date
+                0x00,
+                0x00, // First cluster (high, 0)
+                0x00,
+                0x34, // Last mod time
+                0x2A,
+                0x42, // Last mod date
+                0x00,
+                0x00, // First cluster (low, 0)
+                0x00,
+                0x00,
+                0x00,
+                0x00, // File size (0)
+                      // Logger folder entry
+                'L',
+                'O',
+                'G',
+                'G',
+                'E',
+                'R',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',  // Name (lowercase)
+                0x10, // Directory attribute
+                0x18, // Reserved (NT byte for lowercase basename)
+                0x00, // Creation time (tenths)
+                0x00,
+                0x34, // Creation time (10:00:00)
+                0x2A,
+                0x42, // Creation date (2023-01-01)
+                0x2A,
+                0x42, // Last access date
+                0x00,
+                0x00, // First cluster (high)
+                0x00,
+                0x34, // Last mod time
+                0x2A,
+                0x42, // Last mod date
+                0x03,
+                0x00, // First cluster (low, cluster 3)
+                0x00,
+                0x00,
+                0x00,
+                0x00, // File size (0)
+                      // Remaining zeros
             },
 
             //------------- Block 25: Logger Directory (Cluster 3) -------------//
             {
                 // . entry
-                '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', // Name
-                0x10,                                                  // Directory attribute
-                0x00,                                                  // Reserved
-                0x00,                                                  // Creation time (tenths)
-                0x00, 0x34,                                            // Creation time (10:00:00)
-                0x2A, 0x42,                                            // Creation date (2023-01-01)
-                0x2A, 0x42,                                            // Last access date
-                0x00, 0x00,                                            // First cluster (high)
-                0x00, 0x34,                                            // Last mod time
-                0x2A, 0x42,                                            // Last mod date
-                0x03, 0x00,                                            // First cluster (low, self: cluster 3)
-                0x00, 0x00, 0x00, 0x00,                                // File size
-                                                                       // .. entry
-                '.', '.', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', // Name
-                0x10,                                                  // Directory attribute
-                0x00,                                                  // Reserved
-                0x00,                                                  // Creation time (tenths)
-                0x00, 0x34,                                            // Creation time (10:00:00)
-                0x2A, 0x42,                                            // Creation date (2023-01-01)
-                0x2A, 0x42,                                            // Last access date
-                0x00, 0x00,                                            // First cluster (high)
-                0x00, 0x34,                                            // Last mod time
-                0x2A, 0x42,                                            // Last mod date
-                0x02, 0x00,                                            // First cluster (low, parent: root at cluster 2)
-                0x00, 0x00, 0x00, 0x00,                                // File size
-                                                                       // Remaining zeros
+                '.',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',  // Name
+                0x10, // Directory attribute
+                0x00, // Reserved
+                0x00, // Creation time (tenths)
+                0x00,
+                0x34, // Creation time (10:00:00)
+                0x2A,
+                0x42, // Creation date (2023-01-01)
+                0x2A,
+                0x42, // Last access date
+                0x00,
+                0x00, // First cluster (high)
+                0x00,
+                0x34, // Last mod time
+                0x2A,
+                0x42, // Last mod date
+                0x03,
+                0x00, // First cluster (low, self: cluster 3)
+                0x00,
+                0x00,
+                0x00,
+                0x00, // File size
+                      // .. entry
+                '.',
+                '.',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',
+                ' ',  // Name
+                0x10, // Directory attribute
+                0x00, // Reserved
+                0x00, // Creation time (tenths)
+                0x00,
+                0x34, // Creation time (10:00:00)
+                0x2A,
+                0x42, // Creation date (2023-01-01)
+                0x2A,
+                0x42, // Last access date
+                0x00,
+                0x00, // First cluster (high)
+                0x00,
+                0x34, // Last mod time
+                0x2A,
+                0x42, // Last mod date
+                0x02,
+                0x00, // First cluster (low, parent: root at cluster 2)
+                0x00,
+                0x00,
+                0x00,
+                0x00, // File size
+                      // Remaining zeros
             },
 
             //------------- Blocks 26-127: Data Region -------------//
@@ -291,7 +395,7 @@ void tud_msc_capacity_cb(uint8_t lun, uint32_t *block_count, uint16_t *block_siz
 
   printf("### SCSI_CMD_READ_CAPACITY_10 ###\r\n");
 
-  *block_count = DISK_BLOCK_NUM;
+  *block_count = DISK_BLOCK_NUM - 1; // Last LBA
   *block_size = DISK_BLOCK_SIZE;
 }
 
@@ -320,7 +424,7 @@ int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buff
   if (lba >= DISK_BLOCK_NUM)
     return -1;
   // Debug: Log block reads to UART
-  
+
   char msg[32];
   sprintf(msg, "### READ10: LBA=%lu, Size=%lu ###\r\n", lba, bufsize);
   printf(msg);
@@ -336,7 +440,6 @@ bool tud_msc_is_writable_cb(uint8_t lun)
   printf("### Is Writable ###\r\n");
 
   return true;
-
 }
 
 // Callback for WRITE10 command
@@ -411,19 +514,60 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
 // Callback for unhandled SCSI commands
 int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, uint16_t bufsize)
 {
-
-  printf("### unhandled SCSI commands ###\r\n");
+  printf("### SCSI command: 0x%02X ###\r\n", scsi_cmd[0]);
 
   void const *response = NULL;
   int32_t resplen = 0;
   bool in_xfer = true;
+
   switch (scsi_cmd[0])
   {
+  case 0x1A: // MODE SENSE(6)
+  {
+    uint8_t len = scsi_cmd[4];
+    uint8_t mode_data[4] = {3, 0, 0, 0}; // Mode data length 3 (excluding header), medium 0, params 0 (WP=0), block desc len 0
+    resplen = TU_MIN(len, sizeof(mode_data));
+    response = mode_data;
+    break;
+  }
+
+  case 0x23: // READ FORMAT CAPACITIES
+  {
+    uint16_t alen = (scsi_cmd[7] << 8) | scsi_cmd[8];
+    uint8_t cap_list[12];
+    // Header
+    memset(cap_list, 0, 4);
+    cap_list[3] = 8; // Capacity list length for 1 descriptor
+    // Descriptor: max capacity (full media)
+    cap_list[4] = (DISK_BLOCK_NUM >> 24) & 0xFF;
+    cap_list[5] = (DISK_BLOCK_NUM >> 16) & 0xFF;
+    cap_list[6] = (DISK_BLOCK_NUM >> 8) & 0xFF;
+    cap_list[7] = DISK_BLOCK_NUM & 0xFF;
+    cap_list[8] = 0x02;                           // Formatted media
+    cap_list[9] = 0x00;                           // Reserved
+    cap_list[10] = (DISK_BLOCK_SIZE >> 8) & 0xFF; // Block length BE16 high
+    cap_list[11] = DISK_BLOCK_SIZE & 0xFF;        // low
+    resplen = TU_MIN(alen, sizeof(cap_list));
+    response = cap_list;
+    break;
+  }
+
+  case 0x1E: // PREVENT ALLOW MEDIUM REMOVAL
+  {
+    // Ignore for thumb drive simulation (no lock)
+    resplen = 0;
+    break;
+  }
+
   default:
+    printf("### unhandled SCSI command ###\r\n");
     tud_msc_set_sense(lun, SCSI_SENSE_ILLEGAL_REQUEST, 0x20, 0x00);
     resplen = -1;
     break;
   }
+
+  if (resplen < 0)
+    return resplen;
   if (resplen > bufsize)
     resplen = bufsize;
   if (response && resplen > 0)
