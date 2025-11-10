@@ -1,0 +1,109 @@
+### GET CONFIGURATION DESCRIPTOR ###
+### GET CONFIGURATION DESCRIPTOR ###
+### GET STRING DESCRIPTOR ###
+### GET STRING DESCRIPTOR ###
+### GET STRING DESCRIPTOR ###
+### GET CONFIGURATION DESCRIPTOR ###
+### device is mounted ###
+### SCSI_CMD_INQUIRY ###
+### Test Unit Ready ###
+### SCSI_CMD_READ_CAPACITY_10 ###
+### READ10: LBA=0 ###
+### READ10: LBA=4 ###
+### READ10: LBA=5 ###
+### READ10: LBA=6 ###
+### READ10: LBA=7 ###
+### READ10: LBA=8 ###
+### READ10: LBA=9 ###
+### READ10: LBA=10 ###
+### READ10: LBA=11 ###
+### READ10: LBA=12 ###
+### READ10: LBA=13 ###
+### READ10: LBA=14 ###
+### READ10: LBA=15 ###
+### READ10: LBA=16 ###
+### READ10: LBA=17 ###
+### READ10: LBA=18 ###
+### READ10: LBA=19 ###
+### READ10: LBA=20 ###
+### READ10: LBA=21 ###
+### READ10: LBA=22 ###
+### READ10: LBA=23 ###
+### READ10: LBA=24 ###
+### READ10: LBA=25 ###
+### READ10: LBA=26 ###
+### READ10: LBA=27 ###
+### READ10: LBA=28 ###
+### READ10: LBA=29 ###
+### READ10: LBA=30 ###
+### READ10: LBA=31 ###
+### READ10: LBA=32 ###
+### READ10: LBA=33 ###
+### READ10: LBA=34 ###
+### READ10: LBA=35 ###
+### READ10: LBA=36 ###
+### READ10: LBA=37 ###
+### READ10: LBA=38 ###
+### READ10: LBA=39 ###
+### READ10: LBA=40 ###
+### READ10: LBA=41 ###
+### READ10: LBA=42 ###
+### READ10: LBA=43 ###
+### READ10: LBA=44 ###
+### READ10: LBA=45 ###
+### READ10: LBA=46 ###
+### READ10: LBA=47 ###
+### READ10: LBA=48 ###
+### READ10: LBA=49 ###
+### READ10: LBA=50 ###
+### READ10: LBA=51 ###
+### READ10: LBA=52 ###
+### READ10: LBA=53 ###
+### READ10: LBA=54 ###
+### READ10: LBA=55 ###
+### READ10: LBA=56 ###
+### READ10: LBA=57 ###
+### READ10: LBA=58 ###
+### READ10: LBA=59 ###
+### READ10: LBA=60 ###
+### READ10: LBA=61 ###
+### READ10: LBA=62 ###
+### READ10: LBA=63 ###
+### READ10: LBA=64 ###
+### READ10: LBA=65 ###
+### READ10: LBA=66 ###
+### READ10: LBA=67 ###
+### READ10: LBA=132 ###
+### READ10: LBA=168 ###
+### Is Writable ###
+### WRITE10: LBA=168 ###
+### READ10: LBA=4 ###
+### Is Writable ###
+### WRITE10: LBA=164 ###
+### WRITE10: DATA=0.037
+### Is Writable ###
+### WRITE10: LBA=165 ###
+### Is Writable ###
+### WRITE10: LBA=4 ###
+### Is Writable ###
+### WRITE10: LBA=68 ###
+### READ10: LBA=168 ###
+### Is Writable ###
+### WRITE10: LBA=168 ###
+### READ10: LBA=132 ###
+### READ10: LBA=168 ###
+### Is Writable ###
+### WRITE10: LBA=168 ###
+### READ10: LBA=4 ###
+### Is Writable ###
+### WRITE10: LBA=172 ###
+### WRITE10: DATA=0.037
+### Is Writable ###
+### WRITE10: LBA=173 ###
+### Is Writable ###
+### WRITE10: LBA=4 ###
+### Is Writable ###
+### WRITE10: LBA=68 ###
+### READ10: LBA=168 ###
+### Is Writable ###
+### WRITE10: LBA=168 ###

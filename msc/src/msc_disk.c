@@ -28,8 +28,6 @@
 #include "hardware/uart.h"
 #include "disk.h"
 
-#if CFG_TUD_MSC
-
 // Whether host does safe-eject
 static bool ejected = false;
 
@@ -38,7 +36,7 @@ void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16
 {
   (void)lun;
 
-  printf("### SCSI_CMD_INQUIRY ###\r\n");
+  printf("### SCSI INQUIRY ###\r\n");
 
   const char vid[] = "TinyUSB";
   const char pid[] = "Mass Storage";
@@ -53,7 +51,7 @@ bool tud_msc_test_unit_ready_cb(uint8_t lun)
 {
   (void)lun;
 
-  printf("### Test Unit Ready ###\r\n");
+  printf("### TEST UNIT READY ###\r\n");
 
   if (ejected)
   {
@@ -68,7 +66,7 @@ void tud_msc_capacity_cb(uint8_t lun, uint32_t *block_count, uint16_t *block_siz
 {
   (void)lun;
 
-  printf("### SCSI_CMD_READ_CAPACITY_10 ###\r\n");
+  printf("### SCSI READ CAPACITY ###\r\n");
 
   *block_count = DISK_BLOCK_NUM - 1; // Last LBA
   *block_size = DISK_BLOCK_SIZE;
@@ -80,7 +78,7 @@ bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, boo
   (void)lun;
   (void)power_condition;
 
-  printf("### Start Stop Unit ###\r\n");
+  printf("### START STOP UNIT ###\r\n");
 
   if (load_eject)
   {
@@ -92,206 +90,136 @@ bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, boo
   return true;
 }
 
-// Callback for READ10 command
-int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buffer, uint32_t bufsize)
-{
-  (void)lun;
-  char msg[64];
-
-  // Debug: Log block reads to UART
-  sprintf(msg, "### READ10: LBA=%lu ###\r\n", lba);
-  printf(msg);
-
-  if (offset != 0) {
-    sprintf(msg, "### READ10: OFFSET=%lu ###\r\n", offset);
-    printf(msg);
-  }
-
-  if (bufsize != DISK_BLOCK_SIZE)
-  {
-    sprintf(msg, "### READ10: BUFSIZE=%lu ###\r\n", bufsize);
-    printf(msg);
-  }
-
-  if (lba == 0)
-  {
-    memcpy(buffer, lba_0, DISK_BLOCK_SIZE);
-  } 
-  else if (lba == 4) 
-  {
-    memcpy(buffer, lba_4, DISK_BLOCK_SIZE);
-  }
-  else if (lba == 68)
-  {
-    memcpy(buffer, lba_68, DISK_BLOCK_SIZE);
-  }
-  else if (lba == 132)
-  {
-    memcpy(buffer, lba_132, DISK_BLOCK_SIZE);
-  }
-  else if (lba == 168)
-  {
-    memcpy(buffer, lba_168, DISK_BLOCK_SIZE);
-  }
-  else // lba_1 is all zeros
-  {
-    memcpy(buffer, lba_1, DISK_BLOCK_SIZE);
-  }
-
-  return (int32_t)bufsize;
-}
-
-bool tud_msc_is_writable_cb(uint8_t lun)
-{
-  (void)lun;
-
-  printf("### Is Writable ###\r\n");
-
-  return true;
-}
-
-// Callback for WRITE10 command
-const int ROW = 5;
-const int COL = 2;
-int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *buffer, uint32_t bufsize)
-{
-  (void)lun;
-  (void)offset;
-
-  char msg[64];
-
-  // Debug: Log block writes to UART
-  sprintf(msg, "### WRITE10: LBA=%lu ###\r\n", lba);
-  printf(msg);
-
-  if (offset != 0)
-  {
-    sprintf(msg, "### WRITE10: OFFSET=%lu ###\r\n", offset);
-    printf(msg);
-  }
-
-  if (bufsize != DISK_BLOCK_SIZE)
-  {
-    sprintf(msg, "### WRITE10: BUFSIZE=%lu ###\r\n", bufsize);
-    printf(msg);
-  }
-
-  // Process ASCII CSV data for UART
-  bool has_comma = false;
-  for (int i = 0; i < bufsize; i++)
-  {
-    if (buffer[i] == ',')
-    {
-      has_comma = true;
-    }
-  }
-  if (!has_comma)
-  {
-    return (int32_t)bufsize;
-  }
-  int row = 0;
-  int col = 0;
-  uint8_t *start = buffer;
-  uint8_t *pos = buffer;
-  while (pos < buffer + bufsize && row <= ROW)
-  {
-    if (*pos == ',' || *pos == '\n' || *pos == '\0' || pos == buffer + bufsize - 1)
-    {
-      if (row == ROW && col == COL)
-      {
-        printf("### WRITE10: DATA=");
-        for (const uint8_t *p = start; p < pos; p++)
-        {
-          uart_putc_raw(uart1, *p);
-          printf("%c", *p);
-        }
-        uart_putc_raw(uart1, '\n');
-        printf("\r\n");
-      }
-      if (*pos == ',' || *pos == '\0' || pos == buffer + bufsize - 1)
-      {
-        col++;
-        start = pos + 1;
-      }
-      if (*pos == '\n')
-      {
-        row++;
-        col = 0;
-        start = pos + 1;
-      }
-    }
-    pos++;
-  }
-  return (int32_t)bufsize;
-}
-
 // Callback for unhandled SCSI commands
 int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, uint16_t bufsize)
 {
-  printf("### SCSI command: 0x%02X ###\r\n", scsi_cmd[0]);
-
-  void const *response = NULL;
-  int32_t resplen = 0;
-  bool in_xfer = true;
-
-  switch (scsi_cmd[0])
-  {
-  case 0x1A: // MODE SENSE(6)
-  {
-    uint8_t len = scsi_cmd[4];
-    uint8_t mode_data[4] = {3, 0, 0, 0}; // Mode data length 3 (excluding header), medium 0, params 0 (WP=0), block desc len 0
-    resplen = TU_MIN(len, sizeof(mode_data));
-    response = mode_data;
-    break;
-  }
-
-  case 0x23: // READ FORMAT CAPACITIES
-  {
-    uint16_t alen = (scsi_cmd[7] << 8) | scsi_cmd[8];
-    uint8_t cap_list[12];
-    // Header
-    memset(cap_list, 0, 4);
-    cap_list[3] = 8; // Capacity list length for 1 descriptor
-    // Descriptor: max capacity (full media)
-    cap_list[4] = (DISK_BLOCK_NUM >> 24) & 0xFF;
-    cap_list[5] = (DISK_BLOCK_NUM >> 16) & 0xFF;
-    cap_list[6] = (DISK_BLOCK_NUM >> 8) & 0xFF;
-    cap_list[7] = DISK_BLOCK_NUM & 0xFF;
-    cap_list[8] = 0x02;                           // Formatted media
-    cap_list[9] = 0x00;                           // Reserved
-    cap_list[10] = (DISK_BLOCK_SIZE >> 8) & 0xFF; // Block length BE16 high
-    cap_list[11] = DISK_BLOCK_SIZE & 0xFF;        // low
-    resplen = TU_MIN(alen, sizeof(cap_list));
-    response = cap_list;
-    break;
-  }
-
-  case 0x1E: // PREVENT ALLOW MEDIUM REMOVAL
-  {
-    // Ignore for thumb drive simulation (no lock)
-    resplen = 0;
-    break;
-  }
-
-  default:
-    printf("### unhandled SCSI command ###\r\n");
-    tud_msc_set_sense(lun, SCSI_SENSE_ILLEGAL_REQUEST, 0x20, 0x00);
-    resplen = -1;
-    break;
-  }
-
-  if (resplen < 0)
-    return resplen;
-  if (resplen > bufsize)
-    resplen = bufsize;
-  if (response && resplen > 0)
-  {
-    if (in_xfer)
-    {
-      memcpy(buffer, response, (size_t)resplen);
-    }
-  }
-  return (int32_t)resplen;
+  printf("### UNHANDLED SCSI COMMAND: 0x%02X ###\r\n", scsi_cmd[0]);
 }
 
-#endif
+  // Callback for READ10 command
+  int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buffer, uint32_t bufsize)
+  {
+    (void)lun;
+
+    // Debug: Log block reads to UART
+    printf("### READ: LBA=%lu ###\r\n", lba);
+
+    if (offset != 0)
+    {
+      printf("### OFFSET=%lu ###\r\n", offset);
+    }
+
+    if (bufsize != DISK_BLOCK_SIZE)
+    {
+      printf("### BUFSIZE=%lu ###\r\n", bufsize);
+    }
+
+    if (lba == 0)
+    {
+      memcpy(buffer, lba_0, DISK_BLOCK_SIZE);
+    }
+    else if (lba == 4)
+    {
+      memcpy(buffer, lba_4, DISK_BLOCK_SIZE);
+    }
+    else if (lba == 68)
+    {
+      memcpy(buffer, lba_68, DISK_BLOCK_SIZE);
+    }
+    else if (lba == 132)
+    {
+      memcpy(buffer, lba_132, DISK_BLOCK_SIZE);
+    }
+    else if (lba == 168)
+    {
+      memcpy(buffer, lba_168, DISK_BLOCK_SIZE);
+    }
+    else // lba_1 is all zeros
+    {
+      memcpy(buffer, lba_1, DISK_BLOCK_SIZE);
+    }
+
+    return (int32_t)bufsize;
+  }
+
+  bool tud_msc_is_writable_cb(uint8_t lun)
+  {
+    (void)lun;
+
+    printf("### IS WRITABLE ###\r\n");
+
+    return true;
+  }
+
+  // Callback for WRITE10 command
+  const int ROW = 5;
+  const int COL = 2;
+  int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *buffer, uint32_t bufsize)
+  {
+    (void)lun;
+    (void)offset;
+
+    char msg[64];
+
+    // Debug: Log block writes to UART
+    printf("### WRITE: LBA=%lu ###\r\n", lba);
+
+
+    if (offset != 0)
+    {
+      printf(msg, "### OFFSET=%lu ###\r\n", offset);
+    }
+
+    if (bufsize != DISK_BLOCK_SIZE)
+    {
+      printf("### BUFSIZE=%lu ###\r\n", bufsize);
+    }
+
+    // Process ASCII CSV data for UART
+    bool has_comma = false;
+    for (int i = 0; i < bufsize; i++)
+    {
+      if (buffer[i] == ',')
+      {
+        has_comma = true;
+      }
+    }
+    if (!has_comma)
+    {
+      return (int32_t)bufsize;
+    }
+    int row = 0;
+    int col = 0;
+    uint8_t *start = buffer;
+    uint8_t *pos = buffer;
+    while (pos < buffer + bufsize && row <= ROW)
+    {
+      if (*pos == ',' || *pos == '\n' || *pos == '\0' || pos == buffer + bufsize - 1)
+      {
+        if (row == ROW && col == COL)
+        {
+          printf("### DATA=");
+          for (const uint8_t *p = start; p < pos; p++)
+          {
+            uart_putc_raw(uart1, *p);
+            printf("%c", *p);
+          }
+          uart_putc_raw(uart1, '\n');
+          printf(" ###\r\n");
+        }
+        if (*pos == ',' || *pos == '\0' || pos == buffer + bufsize - 1)
+        {
+          col++;
+          start = pos + 1;
+        }
+        if (*pos == '\n')
+        {
+          row++;
+          col = 0;
+          start = pos + 1;
+        }
+      }
+      pos++;
+    }
+    return (int32_t)bufsize;
+  }
