@@ -1,4 +1,7 @@
-# Lab Input Translator (LIT)
+<img src="./docs/img/assembly-photo-02.jpeg" alt="assembly-photo-02" width="400"/>
+
+
+# Lab Input Translator
 
 The purpose of the LIT to perform a translation, allowing a lab instrument to enter reading data into a PC. The instrument is capable of saving data to a USB storage device in the form of a CSV file, but can not enter data directly to a PC. The LIT connects to the lab instrument and the PC. It allows to instrument to save a file to it, then it reads the file and sends the readings data to the PC.
 
@@ -21,6 +24,7 @@ To load a program onto the Pico 2, plug the Pico 2 into a PC's USB port while ho
 **power supply**
 
 Both devices are powered by the PC's USB supply voltage. The red power line on device A's USB cable is cut, to disconnect it from the LI's USB supply voltage.
+**It is important to cut the power wire in the cable, otherwise the meter's USB power output will be connected to the PC's USB power output, which could potentially damage the meter or the PC.** 
 
 | controller A pin | controller B pin | description |
 | --- | --- | --- |
@@ -33,6 +37,10 @@ Both devices are powered by the PC's USB supply voltage. The red power line on d
 | controller A pin | controller B pin | description |
 | --- | --- | --- |
 | 6 | 7 | controller A's TX is connected to controller B's RX |
+| 1 | NA | serial debug log signal wire from controller A |
+| 3 | NA | ground wire from controller A |
+
+<img src="./docs/img/assembly-photo-01.jpeg" alt="assembly-photo-01" width="400"/>
 
 ## MSC overview
 
@@ -50,7 +58,7 @@ There are three changes from the example that were required for the device to wo
 
 In the tinyUSB example named `hid_multiple_interface`, the microcontroller is configured as a basic keyboard and mouse (When the controller's button is pushed, it types the letter 'a' and moves the mouse).
 
-For the LIT, the function `hid_task` in `main.c` has been edited, so that it reads characters received from MSC, and sends keycodes to the PC.
+For the LIT, the function `uart_data_task` in `main.c` was added. It reads characters received from MSC, and sends keycodes to the PC.
 
 ## MSC Limitations
 
