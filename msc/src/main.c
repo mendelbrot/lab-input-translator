@@ -54,6 +54,7 @@ enum
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 void led_blinking_task(void);
+void button_press_task(void);
 
 /*------------- MAIN -------------*/
 int main(void)
@@ -81,6 +82,7 @@ int main(void)
   {
     tud_task(); // tinyusb device task
     led_blinking_task();
+    button_press_task();
   }
 }
 
@@ -91,7 +93,7 @@ int main(void)
 // Invoked when device is mounted
 void tud_mount_cb(void)
 {
-  printf("### device is mounted ###\r\n");
+  printf("### DEVICE MOUNTED ###\r\n");
 
   blink_interval_ms = BLINK_MOUNTED;
 }
@@ -109,7 +111,7 @@ void tud_suspend_cb(bool remote_wakeup_en)
 {
   (void)remote_wakeup_en;
 
-  printf("### device is unmounted ###\r\n");
+  printf("### USB BUS SUSPENDED ###\r\n");
 
   blink_interval_ms = BLINK_SUSPENDED;
 }
@@ -117,10 +119,38 @@ void tud_suspend_cb(bool remote_wakeup_en)
 // Invoked when usb bus is resumed
 void tud_resume_cb(void)
 {
-
-  printf("### usb bus is resumed ###\r\n");
+  printf("### USB BUS RESUMED ###\r\n");
 
   blink_interval_ms = tud_mounted() ? BLINK_MOUNTED : BLINK_NOT_MOUNTED;
+}
+
+//--------------------------------------------------------------------+
+// BUTTON PRESS TASK
+// Press the button to test device integration
+//--------------------------------------------------------------------+
+void button_press_task(void)
+{
+  static bool pressed = false;
+
+  // Poll every 10ms
+  const uint32_t interval_ms = 10;
+  static uint32_t start_ms = 0;
+
+  if (board_millis() - start_ms < interval_ms)
+    return; // not enough time
+  start_ms += interval_ms;
+
+  bool btn = board_button_read();
+
+  if (btn && !pressed)
+  {
+    pressed = true;
+    uart_puts(uart1, "8888.8\n");
+  }
+
+  if (!btn && pressed) {
+    pressed = false;
+  }
 }
 
 //--------------------------------------------------------------------+
