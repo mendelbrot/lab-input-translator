@@ -1,9 +1,11 @@
-<img src="./docs/img/assembly-photo-02.jpeg" alt="assembly-photo-02" width="400"/>
-
 
 # Lab Input Translator
 
-The purpose of the LIT to perform a translation, allowing a lab instrument to enter reading data into a PC. The instrument is capable of saving data to a USB storage device in the form of a CSV file, but can not enter data directly to a PC. The LIT connects to the lab instrument and the PC. It allows to instrument to save a file to it, then it reads the file and sends the readings data to the PC.
+
+
+The purpose of the LIT to perform a translation, allowing a lab instrument to enter reading data into a PC. The instrument is capable of saving data to a USB storage device in the form of a CSV file, but can not enter data directly to a PC. The LIT is a bridge between the lab instrument and the PC. It allows to instrument to save a file to it, then it reads the file and enters the data into the PC.
+
+<img src="./docs/img/assembly-photo-02.jpeg" alt="assembly-photo-02" width="400"/>
 
 The LIT consists of two Raspberry Pi Pico microcontrollers. Both of the controllers are configured as USB devices. Controller A is configured as a storage device (MSC) and is connected to it's host, the lab instrument (LI). Controller B is configured as an input device (HID) and is connected to it's host, the PC.  Device A sends data to device B using the UART (Universal Asynchronous Receiver/Transmitter) serial protocol.
 
@@ -66,7 +68,7 @@ For the LIT, the function `uart_data_task` in `main.c` was added. It reads chara
 
 `tud_msc_write10_cb` uses a parsing approach that will not work for long files. In FAT filesystems, memory is portioned in 512 byte sectors. A file longer than 512 bytes will be stored in two or more sectors, and this means the host OS will call the write function multiple times with partial files. To handle long files, a more complex and robust approach would be needed to piece together the file from multiple write requests and then parse. The CSV file that the lab instrument writes is longer that 512 bytes, but luckily it is just slightly longer (550 bytes) and the relevant data to extract is in the first part.
 
-Because the msc is effectively stateless, it is possible that the lab instrument may error from a divergence from its internal state and expectation of the state of the msc. This has not been observed, but sustained use with the lab instrument has also not been tested.
+`tud_msc_write10_cb` does not actually write to a filesystem. It would be possible for a host device to error if it writes, then reads and finds what it had just written isn't there. In testing this hasn't happened.
 
 ## Development tooling
 
